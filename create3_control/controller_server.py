@@ -23,7 +23,7 @@ class ControllerServer(Node):
 
         # Setup ROS 2 parameters
         self.declare_parameter('pose_topic', 'odom')
-        self.declare_parameter('controller_type', 'fb_linearization')
+        self.declare_parameter('controller_type', 'rotate_drive_rotate')
         self.declare_parameter('control_period', 0.015)
 
         # Create mutex

@@ -1,6 +1,6 @@
 import numpy as np
 
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose, Quaternion
 
 def euler_from_quaternion(quaternion):
     """
@@ -41,3 +41,22 @@ def add_relative_to_absolute_pose(relative_position, absolute_origin_pose):
     absolute_pose.orientation = absolute_origin_pose.orientation
 
     return absolute_pose
+
+def unit_quaternions_difference(q1, q2):
+
+    diff_quaternion = Quaternion()
+
+    diff_quaternion.w = q2.w*-q1.w - q2.x*q1.x - q2.y*q1.y - q2.z*q1.z
+    diff_quaternion.x = q2.w*q1.x + q2.x*-q1.w + q2.y*q1.z - q2.z*q1.y
+    diff_quaternion.y = q2.w*q1.y + q2.y*-q1.w + q2.z*q1.x - q2.x*q1.z
+    diff_quaternion.z = q2.w*q1.z + q2.z*-q1.w + q2.x*q1.y - q2.y*q1.x
+
+    return diff_quaternion
+
+def angles_radians_difference(angle1, angle2):
+    # diff_angle = angle1 - angle2
+    # angle1 and angle2 in [-pi, pi]
+
+    diff_angle = (angle1 - angle2 + np.pi) % (2 * np.pi) - np.pi
+
+    return diff_angle

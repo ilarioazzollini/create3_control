@@ -1,4 +1,5 @@
 from create3_control.controllers.fb_linearization import FBLinearizationController
+from create3_control.controllers.rotate_drive_rotate import RotateDriveRotateController
 
 def construct_fb_linearization_controller(ros2_node):
     controller_name = 'fb_linearization'
@@ -17,8 +18,18 @@ def construct_fb_linearization_controller(ros2_node):
 
     return controller
 
+def construct_rotate_drive_rotate_controller(ros2_node):
+    controller_name = 'rotate_drive_rotate'
+    ros2_node.get_logger().info(f"Creating controller {controller_name}")
+
+    # Construct controller
+    controller = RotateDriveRotateController()
+
+    return controller
+
 controllers_map = {
     'fb_linearization' : lambda node: construct_fb_linearization_controller(node),
+    'rotate_drive_rotate' : lambda node: construct_rotate_drive_rotate_controller(node),
 }
 
 def construct(controller_type, node):
