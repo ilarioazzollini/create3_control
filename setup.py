@@ -21,7 +21,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'drive_to_pose = create3_control.drive_to_pose.drive_to_pose:main'
+            'controller_server = create3_control.controller_server:main'
         ],
     },
 )
