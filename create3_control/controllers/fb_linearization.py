@@ -41,7 +41,7 @@ class FBLinearizationController(ControllerInterface):
         e_z = front_bumper_absolute_pose.position.z - self.absolute_goal_pose.position.z
 
         if abs(e_x) <= self.convergence_radius and abs(e_y) <= self.convergence_radius and abs(e_z) <= self.convergence_radius:
-            return Twist(), True
+            return None
 
         # print(f"e_x: {e_x}, e_y: {e_y}")
 
@@ -61,4 +61,4 @@ class FBLinearizationController(ControllerInterface):
         msg.linear.x = v # m/s
         msg.angular.z = omega # rad/s
         
-        return msg, False
+        return msg

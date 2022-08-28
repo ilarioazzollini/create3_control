@@ -1,5 +1,6 @@
 
 import time
+from threading import Lock
 
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Twist
@@ -24,6 +25,9 @@ class ControllerServer(Node):
         self.declare_parameter('pose_topic', 'odom')
         self.declare_parameter('controller_type', 'fb_linearization')
         self.declare_parameter('control_period', 0.015)
+
+        # Create mutex
+        self.odom_lock = Lock()
 
         # Subscribe to robot pose topic
         pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
@@ -96,17 +100,20 @@ class ControllerServer(Node):
                 self.get_logger().info('Goal canceled')
                 return NavigateToPosition.Result()
 
+            self.odom_lock.acquire()
             if not self.last_odom_msg:
+                self.odom_lock.release()
                 continue
 
             current_pose = self.last_odom_msg.pose.pose
+            self.odom_lock.release()
 
             if not controller_setup:
                 self.controller.setup_goal(goal_handle.request.goal_pose.pose, current_pose)
                 controller_setup = True
 
-            cmd_msg, goal_reached = self.controller.step_function(current_pose)
-            if goal_reached:
+            cmd_msg = self.controller.step_function(current_pose)
+            if not cmd_msg:
                 break
 
             self.publisher_.publish(cmd_msg)
@@ -121,7 +128,9 @@ class ControllerServer(Node):
         return result
 
     def odom_callback(self, msg):
+        self.odom_lock.acquire()
         self.last_odom_msg = msg
+        self.odom_lock.release()
 
 
 def main(args=None):
