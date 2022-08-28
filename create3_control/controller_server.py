@@ -23,7 +23,7 @@ class ControllerServer(Node):
 
         # Setup ROS 2 parameters
         self.declare_parameter('pose_topic', 'odom')
-        self.declare_parameter('controller_type', 'rotate_drive_rotate')
+        self.declare_parameter('controller_type', 'polar_coordinates')
         self.declare_parameter('control_period', 0.015)
 
         # Create mutex
@@ -52,13 +52,11 @@ class ControllerServer(Node):
         # Create velocity publisher
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', qos_profile_sensor_data)
 
-        # Setup member variables
-        controller_type = self.get_parameter('controller_type').get_parameter_value().string_value
-        self.controller = controllers_factory.construct(controller_type, self)
-        
+        # Setup member variables        
         self.control_period = self.get_parameter('control_period').get_parameter_value().double_value
         self.last_odom_msg = None
         self.goal_handle = None
+        self.controller = None
 
         # prevent unused variable warnings
         self.odom_subscription  
@@ -91,7 +89,6 @@ class ControllerServer(Node):
         self.get_logger().info('Executing goal...')
 
         current_pose = Pose()
-        controller_setup = False
         while True:
             time.sleep(self.control_period)
 
@@ -108,9 +105,10 @@ class ControllerServer(Node):
             current_pose = self.last_odom_msg.pose.pose
             self.odom_lock.release()
 
-            if not controller_setup:
+            if not self.controller:
+                controller_type = self.get_parameter('controller_type').get_parameter_value().string_value
+                self.controller = controllers_factory.construct(controller_type, self)
                 self.controller.setup_goal(goal_handle.request.goal_pose.pose, current_pose)
-                controller_setup = True
 
             cmd_msg = self.controller.step_function(current_pose)
             if not cmd_msg:
@@ -120,6 +118,10 @@ class ControllerServer(Node):
 
         goal_handle.succeed()
         self.get_logger().info('Goal reached.')
+
+        # Cleanup
+        self.goal_handle = None
+        self.controller = None
 
         # Populate result message
         result = NavigateToPosition.Result()
