@@ -30,18 +30,15 @@ def construct_polar_coordinates_controller(ros2_node):
     k_r_param_name = controller_name + '.k_r'
     k_g_param_name = controller_name + '.k_g'
     k_d_param_name = controller_name + '.k_d'
-    rotate_to_goal_param_name = controller_name + '.rotate_to_goal'
     declare_parameter_if_not_declared(ros2_node, k_r_param_name, 1.0)
-    declare_parameter_if_not_declared(ros2_node, k_g_param_name, 1.0)
-    declare_parameter_if_not_declared(ros2_node, k_d_param_name, 1.0)
-    declare_parameter_if_not_declared(ros2_node, rotate_to_goal_param_name, True)
+    declare_parameter_if_not_declared(ros2_node, k_g_param_name, 8.0)
+    declare_parameter_if_not_declared(ros2_node, k_d_param_name, 3.5)
 
     # Construct controller
     k_r = ros2_node.get_parameter(k_r_param_name).get_parameter_value().double_value
     k_g = ros2_node.get_parameter(k_g_param_name).get_parameter_value().double_value
     k_d = ros2_node.get_parameter(k_d_param_name).get_parameter_value().double_value
-    rotate_to_goal = ros2_node.get_parameter(rotate_to_goal_param_name).get_parameter_value().bool_value
-    controller = PolarCoordinatesController(k_r, k_g, k_d, rotate_to_goal)
+    controller = PolarCoordinatesController(k_r, k_g, k_d)
 
     return controller
 
