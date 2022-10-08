@@ -17,10 +17,14 @@ class PolarCoordinatesController(ControllerInterface):
 
         self.absolute_goal_pose = None
         self.oriented_towards_goal = False
+        self.validated_algorithm = False
+        self.do_rotate_write_rotate = False
 
     def setup_goal(self, goal_pose, current_pose):
         self.absolute_goal_pose = utils.add_relative_to_absolute_pose(goal_pose.position, current_pose)
         self.oriented_towards_goal = False
+        self.validated_algorithm = False
+        self.do_rotate_write_rotate = False
 
         print(f"current pose: {current_pose}")
         print(f"absolute goal: {self.absolute_goal_pose}")
@@ -50,14 +54,25 @@ class PolarCoordinatesController(ControllerInterface):
             # Orient towards the goal
             v, omega = self.turn_in_place(self.k_g, gamma)
         else:
-            # Drive towards the goal pose
-            self.oriented_towards_goal = True
-            v, omega = self.pose_regulation(rho, gamma, delta)
+            if not self.validated_algorithm:
+                is_facing_goal_orientation = utils.angles_radians_difference(error_direction, goal_yaw) < np.pi / 3.0
+                if not is_facing_goal_orientation:
+                    self.do_rotate_write_rotate = True
+                self.oriented_towards_goal = True
+                self.validated_algorithm = True
+
+            if self.do_rotate_write_rotate:
+                if not position_reached:
+                    v, omega = self.pose_regulation(rho, gamma, 0.0)
+                else:
+                    v, omega = self.turn_in_place(self.k_d, e_yaw)
+            else:
+                v, omega = self.pose_regulation(rho, gamma, delta)
 
         msg = Twist()
         msg.linear.x = v # m/s
         msg.angular.z = omega # rad/s
-        
+
         return msg
 
     def turn_in_place(self, gain, orientation_error):
@@ -69,3 +84,10 @@ class PolarCoordinatesController(ControllerInterface):
         v = self.k_r * rho
         omega = self.k_g * gamma + self.k_d * delta
         return v, omega
+        '''
+        sing = np.sin(gamma)
+        cosg = np.cos(gamma)
+        v = self.k_r * rho * cosg
+        omega = (self.k_g * gamma) + self.k_r * sing * cosg * (gamma + self.k_d * delta) / gamma 
+        return v, omega
+        '''
