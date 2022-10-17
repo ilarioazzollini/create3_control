@@ -1,6 +1,6 @@
 # Create 3 Control
 
-## How to Build
+## How to Build and Run
 
 Clone the repository and start a Docker container
 
@@ -30,4 +30,18 @@ Attach a new terminal to the Docker container and send a goal request to the ser
 
 ```
 ros2 action send_goal /drive_to_pose irobot_create_msgs/action/NavigateToPosition "{goal_pose:{pose:{position:{x: 1,y: 1.0,z: 0.0}, orientation:{x: 0.0,y: 0.0, z: 0.0, w: 1.0}}}}"
+```
+
+#### Use custom parameters
+
+Controller parameters can be configured at startup using
+
+```
+python3 src/create3_control/create3_control/controller_server.py --ros-args -p controller_type:=polar_coordinates -p polar_coordinates.rotate_to_goal:=False
+```
+
+The parameters can also be modified at runtime using standard ROS 2 parameters APIs.
+
+```
+ros2 param set controller polar_coordinates.k_r 1.5
 ```

@@ -10,7 +10,7 @@ class FBLinearizationController(ControllerInterface):
 
     def __init__(self, gain, length):
         self.gain = gain
-        self.convergence_radius = 0.01 # cm
+        self.convergence_radius = 0.01 # m
 
         self.front_bumper_position = Vector3()
         self.front_bumper_position.x = length
