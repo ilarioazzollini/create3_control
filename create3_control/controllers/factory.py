@@ -1,9 +1,25 @@
+# Copyright 2022 Ilario Antonio Azzollini.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from create3_control.controllers.fb_linearization import FBLinearizationController
 from create3_control.controllers.polar_coordinates import PolarCoordinatesController
+
 
 def declare_parameter_if_not_declared(node, parameter_name, default_value):
     if not node.has_parameter(parameter_name):
         node.declare_parameter(parameter_name, default_value)
+
 
 def construct_fb_linearization_controller(ros2_node):
     controller_name = 'fb_linearization'
@@ -21,6 +37,7 @@ def construct_fb_linearization_controller(ros2_node):
     controller = FBLinearizationController(gain, length)
 
     return controller
+
 
 def construct_polar_coordinates_controller(ros2_node):
     controller_name = 'polar_coordinates'
@@ -42,10 +59,12 @@ def construct_polar_coordinates_controller(ros2_node):
 
     return controller
 
+
 controllers_map = {
-    'fb_linearization' : lambda node: construct_fb_linearization_controller(node),
-    'polar_coordinates' : lambda node: construct_polar_coordinates_controller(node),
+    'fb_linearization': lambda node: construct_fb_linearization_controller(node),
+    'polar_coordinates': lambda node: construct_polar_coordinates_controller(node),
 }
+
 
 def construct(controller_type, node):
     return controllers_map[controller_type](node)

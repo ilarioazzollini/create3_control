@@ -1,16 +1,29 @@
+# Copyright 2022 Ilario Antonio Azzollini.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import math
 import numpy as np
-
-from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Twist
 
 from create3_control.controllers.controller_interface import ControllerInterface
 import create3_control.utilities as utils
 
+
 class PolarCoordinatesController(ControllerInterface):
 
     def __init__(self, k_r, k_g, k_d):
-        self.convergence_radius = 0.01 # m
+        self.convergence_radius = 0.01  # m
         self.k_r = k_r
         self.k_g = k_g
         self.k_d = k_d
@@ -70,8 +83,8 @@ class PolarCoordinatesController(ControllerInterface):
                 v, omega = self.pose_regulation(rho, gamma, delta)
 
         msg = Twist()
-        msg.linear.x = v # m/s
-        msg.angular.z = omega # rad/s
+        msg.linear.x = v  # m/s
+        msg.angular.z = omega  # rad/s
 
         return msg
 
@@ -88,6 +101,6 @@ class PolarCoordinatesController(ControllerInterface):
         sing = np.sin(gamma)
         cosg = np.cos(gamma)
         v = self.k_r * rho * cosg
-        omega = (self.k_g * gamma) + self.k_r * sing * cosg * (gamma + self.k_d * delta) / gamma 
+        omega = (self.k_g * gamma) + self.k_r * sing * cosg * (gamma + self.k_d * delta) / gamma
         return v, omega
         '''

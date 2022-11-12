@@ -1,3 +1,17 @@
+# Copyright 2022 Ilario Antonio Azzollini.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import numpy as np
 
 from geometry_msgs.msg import Vector3
@@ -6,11 +20,12 @@ from geometry_msgs.msg import Twist
 from create3_control.controllers.controller_interface import ControllerInterface
 import create3_control.utilities as utils
 
+
 class FBLinearizationController(ControllerInterface):
 
     def __init__(self, gain, length):
         self.gain = gain
-        self.convergence_radius = 0.01 # m
+        self.convergence_radius = 0.01  # m
 
         self.front_bumper_position = Vector3()
         self.front_bumper_position.x = length
@@ -21,15 +36,17 @@ class FBLinearizationController(ControllerInterface):
     def setup_goal(self, goal_pose, current_pose):
         self.relative_goal_pose = goal_pose
 
-        ##This is commented out because projecting the goal forward of the reference lenght produces a worst result
+        '''
+        This is commented out because
+        projecting the goal forward of the reference lenght produces a worst result
         # front_bumper_absolute_pose = utils.add_relative_to_absolute_pose(self.front_bumper_position, current_pose)
         # self.absolute_goal_pose = utils.add_relative_to_absolute_pose(self.relative_goal_pose.position, front_bumper_absolute_pose)
+        '''
 
         self.absolute_goal_pose = utils.add_relative_to_absolute_pose(self.relative_goal_pose.position, current_pose)
 
         print(f"current pose: {current_pose}")
         print(f"absolute goal: {self.absolute_goal_pose}")
-
 
     def step_function(self, current_pose):
         front_bumper_absolute_pose = utils.add_relative_to_absolute_pose(self.front_bumper_position, current_pose)
@@ -58,7 +75,7 @@ class FBLinearizationController(ControllerInterface):
         # print(f"v: {v}, omega:{omega}")
 
         msg = Twist()
-        msg.linear.x = v # m/s
-        msg.angular.z = omega # rad/s
-        
+        msg.linear.x = v  # m/s
+        msg.angular.z = omega  # rad/s
+
         return msg

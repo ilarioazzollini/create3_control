@@ -1,10 +1,22 @@
+# Copyright 2022 Ilario Antonio Azzollini.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import time
 from threading import Lock
 
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Twist
-from geometry_msgs.msg import Vector3
 from irobot_create_msgs.action import NavigateToPosition
 from nav_msgs.msg import Odometry
 import rclpy
@@ -15,6 +27,7 @@ from rclpy.qos import qos_profile_sensor_data
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
 
 import create3_control.controllers.factory as controllers_factory
+
 
 class ControllerServer(Node):
 
@@ -37,7 +50,7 @@ class ControllerServer(Node):
             self.odom_callback,
             qos_profile_sensor_data,
             callback_group=ReentrantCallbackGroup())
-        
+
         # Create action server
         self.action_server = ActionServer(
             self,
@@ -52,14 +65,14 @@ class ControllerServer(Node):
         # Create velocity publisher
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', qos_profile_sensor_data)
 
-        # Setup member variables        
+        # Setup member variables
         self.control_period = self.get_parameter('control_period').get_parameter_value().double_value
         self.last_odom_msg = None
         self.goal_handle = None
         self.controller = None
 
         # prevent unused variable warnings
-        self.odom_subscription  
+        self.odom_subscription
         self.action_server
 
         self.get_logger().info('Node created, ready to receive action goals')

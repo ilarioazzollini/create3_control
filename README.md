@@ -20,6 +20,11 @@ colcon build
 source install/setup.sh
 ```
 
+Test the repository (optional)
+```
+colcon test --event-handlers console_cohesion+ --return-code-on-test-failure --packages-select create3_control
+```
+
 Start the action server
 
 ```
@@ -45,3 +50,4 @@ The parameters can also be modified at runtime using standard ROS 2 parameters A
 ```
 ros2 param set controller polar_coordinates.k_r 1.5
 ```
+
