@@ -15,8 +15,7 @@
 from create3_control.controllers.controller_interface import ControllerInterface
 import create3_control.utilities as utils
 
-from geometry_msgs.msg import Vector3
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Vector3
 
 import numpy as np
 
