@@ -36,8 +36,8 @@ class ControllerServer(Node):
 
         # Setup ROS 2 parameters
         self.declare_parameter('pose_topic', 'odom')
-        self.declare_parameter('controller_type', 'polar_coordinates')
-        self.declare_parameter('control_period', 0.015)
+        self.declare_parameter('ctrl_type', 'polar_coordinates')
+        self.declare_parameter('ctrl_period', 0.015)
 
         # Create mutex
         self.odom_lock = Lock()
@@ -66,7 +66,7 @@ class ControllerServer(Node):
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', qos_profile_sensor_data)
 
         # Setup member variables
-        self.control_period = self.get_parameter('control_period').get_parameter_value().double_value
+        self.ctrl_period = self.get_parameter('ctrl_period').get_parameter_value().double_value
         self.last_odom_msg = None
         self.goal_handle = None
         self.controller = None
@@ -103,7 +103,7 @@ class ControllerServer(Node):
 
         current_pose = Pose()
         while True:
-            time.sleep(self.control_period)
+            time.sleep(self.ctrl_period)
 
             if goal_handle.is_cancel_requested:
                 goal_handle.canceled()
@@ -119,8 +119,8 @@ class ControllerServer(Node):
             self.odom_lock.release()
 
             if not self.controller:
-                controller_type = self.get_parameter('controller_type').get_parameter_value().string_value
-                self.controller = controllers_factory.construct(controller_type, self)
+                ctrl_type = self.get_parameter('ctrl_type').get_parameter_value().string_value
+                self.controller = controllers_factory.construct(ctrl_type, self)
                 self.controller.setup_goal(goal_handle.request.goal_pose.pose, current_pose)
 
             cmd_msg = self.controller.step_function(current_pose)

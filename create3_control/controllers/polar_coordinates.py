@@ -17,7 +17,8 @@ import numpy as np
 from geometry_msgs.msg import Twist
 
 from create3_control.controllers.controller_interface import ControllerInterface
-import create3_control.utilities as utils
+from create3_control.utilities import add_relative_to_absolute_pose as add_rel_to_abs_pose
+from create3_control.utilities import euler_from_quaternion, angles_radians_difference
 
 
 class PolarCoordinatesController(ControllerInterface):
@@ -34,7 +35,7 @@ class PolarCoordinatesController(ControllerInterface):
         self.do_rotate_write_rotate = False
 
     def setup_goal(self, goal_pose, current_pose):
-        self.absolute_goal_pose = utils.add_relative_to_absolute_pose(goal_pose.position, current_pose)
+        self.absolute_goal_pose = add_rel_to_abs_pose(goal_pose.position, current_pose)
         self.oriented_towards_goal = False
         self.validated_algorithm = False
         self.do_rotate_write_rotate = False
@@ -45,14 +46,16 @@ class PolarCoordinatesController(ControllerInterface):
     def step_function(self, current_pose):
         assert self.absolute_goal_pose
 
-        _, _, current_yaw = utils.euler_from_quaternion(current_pose.orientation)
-        _, _, goal_yaw = utils.euler_from_quaternion(self.absolute_goal_pose.orientation)
+        _, _, current_yaw = euler_from_quaternion(current_pose.orientation)
+        _, _, goal_yaw = euler_from_quaternion(self.absolute_goal_pose.orientation)
 
         e_x = self.absolute_goal_pose.position.x - current_pose.position.x
         e_y = self.absolute_goal_pose.position.y - current_pose.position.y
-        e_yaw = utils.angles_radians_difference(goal_yaw, current_yaw)
+        e_yaw = angles_radians_difference(goal_yaw, current_yaw)
 
-        position_reached = abs(e_x) <= self.convergence_radius and abs(e_y) <= self.convergence_radius
+        x_reached = abs(e_x) <= self.convergence_radius
+        y_reached = abs(e_y) <= self.convergence_radius
+        position_reached = x_reached and y_reached
         orientation_reached = abs(e_yaw) <= 0.05
 
         if position_reached and orientation_reached:
@@ -60,7 +63,7 @@ class PolarCoordinatesController(ControllerInterface):
 
         rho = math.sqrt(e_x * e_x + e_y * e_y)
         error_direction = np.arctan2(e_y, e_x)
-        gamma = utils.angles_radians_difference(error_direction, current_yaw)
+        gamma = angles_radians_difference(error_direction, current_yaw)
         delta = gamma + current_yaw
 
         if not self.oriented_towards_goal and abs(gamma) > np.pi / 3.0:
@@ -68,7 +71,8 @@ class PolarCoordinatesController(ControllerInterface):
             v, omega = self.turn_in_place(self.k_g, gamma)
         else:
             if not self.validated_algorithm:
-                is_facing_goal_orientation = utils.angles_radians_difference(error_direction, goal_yaw) < np.pi / 3.0
+                heading_error = angles_radians_difference(error_direction, goal_yaw)
+                is_facing_goal_orientation = heading_error < (np.pi / 3.0)
                 if not is_facing_goal_orientation:
                     self.do_rotate_write_rotate = True
                 self.oriented_towards_goal = True

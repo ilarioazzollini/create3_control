@@ -21,9 +21,12 @@ source install/setup.sh
 ```
 
 Test the repository (optional)
+
 ```
-colcon test --event-handlers console_cohesion+ --return-code-on-test-failure --packages-select create3_control
+colcon test
 ```
+
+and you will find the complete test output in `/root/control_ws/log/latest_test/create3_control/stdout_stderr.log`
 
 Start the action server
 

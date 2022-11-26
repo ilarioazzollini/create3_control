@@ -18,10 +18,11 @@ from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Twist
 
 from create3_control.controllers.controller_interface import ControllerInterface
-import create3_control.utilities as utils
+from create3_control.utilities import add_relative_to_absolute_pose as add_rel_to_abs_pose
+from create3_control.utilities import euler_from_quaternion
 
 
-class FBLinearizationController(ControllerInterface):
+class FBLinCtrl(ControllerInterface):
 
     def __init__(self, gain, length):
         self.gain = gain
@@ -35,42 +36,37 @@ class FBLinearizationController(ControllerInterface):
 
     def setup_goal(self, goal_pose, current_pose):
         self.relative_goal_pose = goal_pose
+        relative_goal_position = self.relative_goal_pose.position
 
-        '''
-        This is commented out because
-        projecting the goal forward of the reference lenght produces a worst result
-        # front_bumper_absolute_pose = utils.add_relative_to_absolute_pose(self.front_bumper_position, current_pose)
-        # self.absolute_goal_pose = utils.add_relative_to_absolute_pose(self.relative_goal_pose.position, front_bumper_absolute_pose)
-        '''
-
-        self.absolute_goal_pose = utils.add_relative_to_absolute_pose(self.relative_goal_pose.position, current_pose)
+        self.absolute_goal_pose = add_rel_to_abs_pose(relative_goal_position, current_pose)
 
         print(f"current pose: {current_pose}")
         print(f"absolute goal: {self.absolute_goal_pose}")
 
     def step_function(self, current_pose):
-        front_bumper_absolute_pose = utils.add_relative_to_absolute_pose(self.front_bumper_position, current_pose)
+        front_bumper_abs_pose = add_rel_to_abs_pose(self.front_bumper_position, current_pose)
 
         assert self.absolute_goal_pose
 
-        e_x = front_bumper_absolute_pose.position.x - self.absolute_goal_pose.position.x
-        e_y = front_bumper_absolute_pose.position.y - self.absolute_goal_pose.position.y
-        e_z = front_bumper_absolute_pose.position.z - self.absolute_goal_pose.position.z
+        e_x = front_bumper_abs_pose.position.x - self.absolute_goal_pose.position.x
+        e_y = front_bumper_abs_pose.position.y - self.absolute_goal_pose.position.y
+        # e_z = front_bumper_abs_pose.position.z - self.absolute_goal_pose.position.z  # never used
 
-        if abs(e_x) <= self.convergence_radius and abs(e_y) <= self.convergence_radius and abs(e_z) <= self.convergence_radius:
+        if abs(e_x) <= self.convergence_radius and abs(e_y) <= self.convergence_radius:
             return None
 
         # print(f"e_x: {e_x}, e_y: {e_y}")
 
-        _, _, yaw = utils.euler_from_quaternion(current_pose.orientation)
+        _, _, yaw = euler_from_quaternion(current_pose.orientation)
 
         # print(f"yaw: {yaw}")
 
         fb_x = - self.gain * e_x
         fb_y = - self.gain * e_y
+        length_const = self.front_bumper_position.x
 
         v = fb_x * np.cos(yaw) + fb_y * np.sin(yaw)
-        omega = (1 / self.front_bumper_position.x) * ((-fb_x * np.sin(yaw)) + (fb_y * np.cos(yaw)))
+        omega = (1 / length_const) * ((-fb_x * np.sin(yaw)) + (fb_y * np.cos(yaw)))
 
         # print(f"v: {v}, omega:{omega}")
 
