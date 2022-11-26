@@ -40,8 +40,8 @@ class FBLinearizationController(ControllerInterface):
         self.absolute_goal_pose = \
             utils.add_relative_to_absolute_pose(relative_goal_position, current_pose)
 
-        print(f"current pose: {current_pose}")
-        print(f"absolute goal: {self.absolute_goal_pose}")
+        print(f'current pose: {current_pose}')
+        print(f'absolute goal: {self.absolute_goal_pose}')
 
     def step_function(self, current_pose):
         front_bumper_abs_pose = \

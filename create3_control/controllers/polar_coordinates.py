@@ -40,8 +40,8 @@ class PolarCoordinatesController(ControllerInterface):
         self.validated_algorithm = False
         self.do_rotate_write_rotate = False
 
-        print(f"current pose: {current_pose}")
-        print(f"absolute goal: {self.absolute_goal_pose}")
+        print(f'current pose: {current_pose}')
+        print(f'absolute goal: {self.absolute_goal_pose}')
 
     def step_function(self, current_pose):
         assert self.absolute_goal_pose
@@ -101,11 +101,11 @@ class PolarCoordinatesController(ControllerInterface):
         v = self.k_r * rho
         omega = self.k_g * gamma + self.k_d * delta
         return v, omega
-        '''
+        """
         sing = np.sin(gamma)
         cosg = np.cos(gamma)
         v = self.k_r * rho * cosg
         omega = \
             (self.k_g * gamma) + self.k_r * sing * cosg * (gamma + self.k_d * delta) / gamma
         return v, omega
-        '''
+        """

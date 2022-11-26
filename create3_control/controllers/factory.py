@@ -23,7 +23,7 @@ def declare_parameter_if_not_declared(node, parameter_name, default_value):
 
 def construct_fb_linearization_controller(ros2_node):
     controller_name = 'fb_linearization'
-    ros2_node.get_logger().info(f"Creating controller {controller_name}")
+    ros2_node.get_logger().info(f'Creating controller {controller_name}')
 
     # Declare controller-specific ROS 2 parameters
     gain_param_name = controller_name + '.gain'
@@ -41,7 +41,7 @@ def construct_fb_linearization_controller(ros2_node):
 
 def construct_polar_coordinates_controller(ros2_node):
     controller_name = 'polar_coordinates'
-    ros2_node.get_logger().info(f"Creating controller {controller_name}")
+    ros2_node.get_logger().info(f'Creating controller {controller_name}')
 
     # Declare controller-specific ROS 2 parameters
     k_r_param_name = controller_name + '.k_r'
