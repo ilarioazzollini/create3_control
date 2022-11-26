@@ -15,6 +15,8 @@
 from threading import Lock
 import time
 
+import create3_control.controllers.factory as controllers_factory
+
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Twist
 from irobot_create_msgs.action import NavigateToPosition
@@ -25,8 +27,6 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallb
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
-
-import create3_control.controllers.factory as controllers_factory
 
 
 class ControllerServer(Node):

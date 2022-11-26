@@ -14,11 +14,12 @@
 
 import math
 
-import numpy as np
-from geometry_msgs.msg import Twist
-
 from create3_control.controllers.controller_interface import ControllerInterface
 import create3_control.utilities as utils
+
+from geometry_msgs.msg import Twist
+
+import numpy as np
 
 
 class PolarCoordinatesController(ControllerInterface):

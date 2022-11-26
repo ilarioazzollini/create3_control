@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
+from create3_control.controllers.controller_interface import ControllerInterface
+import create3_control.utilities as utils
 
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Twist
 
-from create3_control.controllers.controller_interface import ControllerInterface
-import create3_control.utilities as utils
+import numpy as np
 
 
 class FBLinearizationController(ControllerInterface):
