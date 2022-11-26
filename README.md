@@ -1,5 +1,7 @@
 # Create 3 Control
 
+[![License](https://img.shields.io/github/license/ilarioazzollini/create3_control)](https://github.com/ilarioazzollini/create3_control/blob/main/LICENSE) [![Testing](https://github.com/ilarioazzollini/create3_control/actions/workflows/ci.yml/badge.svg)](https://github.com/ilarioazzollini/create3_control/actions/workflows/ci.yml)
+
 ## How to Build and Run
 
 Clone the repository and start a Docker container
