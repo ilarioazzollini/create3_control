@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from create3_control.controllers.fb_linearization import FBLinearizationControllerCtrl
+from create3_control.controllers.fb_linearization import FBLinearizationController
 from create3_control.controllers.polar_coordinates import PolarCoordinatesController
 
 
@@ -34,7 +34,7 @@ def construct_fb_linearization_controller(ros2_node):
     # Construct controller
     gain = ros2_node.get_parameter(gain_param_name).get_parameter_value().double_value
     length = ros2_node.get_parameter(lenght_param_name).get_parameter_value().double_value
-    controller = FBLinearizationControllerCtrl(gain, length)
+    controller = FBLinearizationController(gain, length)
 
     return controller
 

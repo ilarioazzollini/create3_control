@@ -21,7 +21,7 @@ from create3_control.controllers.controller_interface import ControllerInterface
 import create3_control.utilities as utils
 
 
-class FBLinearizationControllerCtrl(ControllerInterface):
+class FBLinearizationController(ControllerInterface):
 
     def __init__(self, gain, length):
         self.gain = gain
