@@ -1,16 +1,31 @@
-import math
-import numpy as np
+# Copyright 2022 Ilario Antonio Azzollini.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-from geometry_msgs.msg import Vector3
-from geometry_msgs.msg import Twist
+import math
 
 from create3_control.controllers.controller_interface import ControllerInterface
 import create3_control.utilities as utils
 
+from geometry_msgs.msg import Twist
+
+import numpy as np
+
+
 class PolarCoordinatesController(ControllerInterface):
 
     def __init__(self, k_r, k_g, k_d):
-        self.convergence_radius = 0.01 # m
+        self.convergence_radius = 0.01  # m
         self.k_r = k_r
         self.k_g = k_g
         self.k_d = k_d
@@ -21,13 +36,14 @@ class PolarCoordinatesController(ControllerInterface):
         self.do_rotate_write_rotate = False
 
     def setup_goal(self, goal_pose, current_pose):
-        self.absolute_goal_pose = utils.add_relative_to_absolute_pose(goal_pose.position, current_pose)
+        self.absolute_goal_pose = \
+            utils.add_relative_to_absolute_pose(goal_pose.position, current_pose)
         self.oriented_towards_goal = False
         self.validated_algorithm = False
         self.do_rotate_write_rotate = False
 
-        print(f"current pose: {current_pose}")
-        print(f"absolute goal: {self.absolute_goal_pose}")
+        print(f'current pose: {current_pose}')
+        print(f'absolute goal: {self.absolute_goal_pose}')
 
     def step_function(self, current_pose):
         assert self.absolute_goal_pose
@@ -39,7 +55,9 @@ class PolarCoordinatesController(ControllerInterface):
         e_y = self.absolute_goal_pose.position.y - current_pose.position.y
         e_yaw = utils.angles_radians_difference(goal_yaw, current_yaw)
 
-        position_reached = abs(e_x) <= self.convergence_radius and abs(e_y) <= self.convergence_radius
+        x_reached = abs(e_x) <= self.convergence_radius
+        y_reached = abs(e_y) <= self.convergence_radius
+        position_reached = x_reached and y_reached
         orientation_reached = abs(e_yaw) <= 0.05
 
         if position_reached and orientation_reached:
@@ -55,7 +73,8 @@ class PolarCoordinatesController(ControllerInterface):
             v, omega = self.turn_in_place(self.k_g, gamma)
         else:
             if not self.validated_algorithm:
-                is_facing_goal_orientation = utils.angles_radians_difference(error_direction, goal_yaw) < np.pi / 3.0
+                heading_error = utils.angles_radians_difference(error_direction, goal_yaw)
+                is_facing_goal_orientation = heading_error < (np.pi / 3.0)
                 if not is_facing_goal_orientation:
                     self.do_rotate_write_rotate = True
                 self.oriented_towards_goal = True
@@ -70,8 +89,8 @@ class PolarCoordinatesController(ControllerInterface):
                 v, omega = self.pose_regulation(rho, gamma, delta)
 
         msg = Twist()
-        msg.linear.x = v # m/s
-        msg.angular.z = omega # rad/s
+        msg.linear.x = v  # m/s
+        msg.angular.z = omega  # rad/s
 
         return msg
 
@@ -84,10 +103,11 @@ class PolarCoordinatesController(ControllerInterface):
         v = self.k_r * rho
         omega = self.k_g * gamma + self.k_d * delta
         return v, omega
-        '''
+        """
         sing = np.sin(gamma)
         cosg = np.cos(gamma)
         v = self.k_r * rho * cosg
-        omega = (self.k_g * gamma) + self.k_r * sing * cosg * (gamma + self.k_d * delta) / gamma 
+        omega = \
+            (self.k_g * gamma) + self.k_r * sing * cosg * (gamma + self.k_d * delta) / gamma
         return v, omega
-        '''
+        """

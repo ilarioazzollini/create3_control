@@ -1,5 +1,7 @@
 # Create 3 Control
 
+[![License](https://img.shields.io/github/license/ilarioazzollini/create3_control)](https://github.com/ilarioazzollini/create3_control/blob/main/LICENSE) [![Testing](https://github.com/ilarioazzollini/create3_control/actions/workflows/ci.yml/badge.svg)](https://github.com/ilarioazzollini/create3_control/actions/workflows/ci.yml)
+
 ## How to Build and Run
 
 Clone the repository and start a Docker container
@@ -19,6 +21,14 @@ ln -s /root/create3_control src
 colcon build
 source install/setup.sh
 ```
+
+Test the repository (optional)
+
+```
+colcon test
+```
+
+and you will find the complete test output in `/root/control_ws/log/latest_test/create3_control/stdout_stderr.log`
 
 Start the action server
 
@@ -45,3 +55,4 @@ The parameters can also be modified at runtime using standard ROS 2 parameters A
 ```
 ros2 param set controller polar_coordinates.k_r 1.5
 ```
+
