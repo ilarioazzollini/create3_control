@@ -1,5 +1,3 @@
-The following was copied from the [ros2/examples repository](https://github.com/ros2/examples/blob/rolling/CONTRIBUTING.md).
-
 Any contribution that you make to this repository will
 be under the Apache 2 License, as dictated by that
 [license](http://www.apache.org/licenses/LICENSE-2.0.html):
@@ -13,8 +11,3 @@ be under the Apache 2 License, as dictated by that
    the terms of any separate license agreement you may have executed
    with Licensor regarding such Contributions.
 ~~~
-
-Contributors must sign-off each commit by adding a `Signed-off-by: ...`
-line to commit messages to certify that they have the right to submit
-the code they are contributing to the project according to the
-[Developer Certificate of Origin (DCO)](https://developercertificate.org/).
